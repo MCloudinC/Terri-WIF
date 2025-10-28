@@ -1,0 +1,69 @@
+# GCP Project Configuration
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+
+# Workload Identity Pool Configuration
+pool_id           = "my-workload-pool"
+pool_display_name = "My Workload Identity Pool"
+pool_description  = "Workload identity pool for external authentication"
+pool_disabled     = false
+
+# Workload Identity Provider Configuration
+provider_id           = "my-provider"
+provider_display_name = "My Identity Provider"
+provider_description  = "Provider for external workload authentication"
+provider_disabled     = false
+
+# Provider Type: Choose one of "oidc", "aws", or "saml"
+provider_type = "oidc"
+
+# Attribute Mapping
+# Map external identity attributes to Google Cloud attributes
+attribute_mapping = {
+  "google.subject"       = "assertion.sub"
+  "attribute.aud"        = "assertion.aud"
+  "attribute.email"      = "assertion.email"
+  "attribute.repository" = "assertion.repository"  # For GitHub Actions
+  "attribute.actor"      = "assertion.actor"       # For GitHub Actions
+}
+
+# Optional: Attribute condition using CEL expression
+# Example for GitHub Actions from specific repository:
+# attribute_condition = "assertion.repository == 'my-org/my-repo'"
+attribute_condition = null
+
+# ==========================================
+# OIDC Provider Configuration (GitHub Actions example)
+# ==========================================
+oidc_issuer_uri = "https://token.actions.githubusercontent.com"
+oidc_allowed_audiences = ["https://github.com/your-org/your-repo"]
+
+# ==========================================
+# AWS Provider Configuration (uncomment if using AWS)
+# ==========================================
+# provider_type = "aws"
+# aws_account_id = "123456789012"
+
+# ==========================================
+# SAML Provider Configuration (uncomment if using SAML)
+# ==========================================
+# provider_type = "saml"
+# saml_idp_metadata_xml = file("path/to/saml-metadata.xml")
+
+# Service Account Configuration
+create_service_account        = true
+service_account_id           = "wif-sa"
+service_account_display_name = "WIF Service Account"
+service_account_description  = "Service account for workload identity federation"
+
+# IAM roles to grant to the service account
+service_account_roles = [
+  "roles/viewer",
+  "roles/storage.objectViewer",
+  # Add more roles as needed
+]
+
+# Optional: Custom member binding for fine-grained access control
+# Example for GitHub Actions from specific repository:
+# pool_member_binding = "principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/attribute.repository/my-org/my-repo"
+pool_member_binding = ""
